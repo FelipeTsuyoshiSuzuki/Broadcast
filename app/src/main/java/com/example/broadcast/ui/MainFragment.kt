@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.broadcast.databinding.FragmentMainBinding
-import com.example.broadcast.utils.AirPlaneReceiver
-import com.example.broadcast.utils.BatteryReceiver
+import com.example.broadcast.utils.Counter
+import com.example.broadcast.utils.receiver.AirPlaneReceiver
+import com.example.broadcast.utils.receiver.BatteryReceiver
+import com.example.broadcast.utils.service.NotificationCountService
 
 class MainFragment : Fragment() {
     lateinit var airplaneReceiver: AirPlaneReceiver
@@ -29,6 +31,7 @@ class MainFragment : Fragment() {
         super.onResume()
         airplaneReceiver = AirPlaneReceiver()
         batteryReceiver = BatteryReceiver()
+        val service = NotificationCountService(requireContext())
 
         IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED).also {
             requireContext().registerReceiver(airplaneReceiver, it)
@@ -38,6 +41,9 @@ class MainFragment : Fragment() {
         }
         IntentFilter(Intent.ACTION_POWER_DISCONNECTED).also {
             requireContext().registerReceiver(batteryReceiver, it)
+        }
+        binding.materialButton.setOnClickListener {
+            service.showNotification(Counter.value)
         }
     }
 
